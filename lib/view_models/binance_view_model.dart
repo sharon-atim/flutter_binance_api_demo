@@ -1,20 +1,29 @@
-
-
-import 'package:flutter/material.dart';
-import 'package:flutter_binance_crypto_api_demo/models/model.dart';
-import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
 
-class BinanceViewModel with ChangeNotifier {
+import 'package:flutter_binance_crypto_api_demo/model/model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+
+final binanceViewModelProvider =
+    FutureProvider<List<BinanceModel>>((ref) async {
+  final binanceViewModel = BinanceViewModel();
+  return await ref.watch(binanceViewModel
+      as AlwaysAliveProviderListenable<FutureOr<List<BinanceModel>>>);
+});
+
+class BinanceViewModel extends AsyncNotifier<List<BinanceModel>> {
   final List<BinanceModel> _binanceList = [];
-  bool _isLoading = false;
-  List<BinanceModel> get binanceList => _binanceList;
-  bool get isLoading => _isLoading;
+  List<BinanceModel> get binanceData => _binanceList;
+
+  BinanceModel operator [](int index) => _binanceList[index];
+
+  @override
+  FutureOr<List<BinanceModel>> build() {
+    return getBinanceData();
+  }
 
   Future<List<BinanceModel>> getBinanceData() async {
-    _isLoading = true;
-    notifyListeners();
-
     try {
       final response = await http
           .get(Uri.parse('https://data.binance.com/api/v3/ticker/24hr'));
@@ -28,15 +37,11 @@ class BinanceViewModel with ChangeNotifier {
             (a, b) => a.symbol.compareTo(b.symbol),
           );
         }
-        _isLoading = false;
-        notifyListeners();
         return _binanceList;
       } else {
         throw Exception('Failed to load');
       }
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
       throw Exception(e);
     }
   }
