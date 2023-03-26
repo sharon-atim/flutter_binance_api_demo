@@ -28,12 +28,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var getData = getBinanceData();
+  final _getData = getBinanceData();
 
   @override
   void initState() {
     super.initState();
-    getData;
+    _getData;
   }
 
   @override
