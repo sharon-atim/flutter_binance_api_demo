@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_binance_crypto_api_demo/binance_data.dart';
-import 'package:flutter_binance_crypto_api_demo/model.dart';
+import 'package:flutter_binance_crypto_api_demo/models/model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -28,7 +26,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _getData = getBinanceData();
+  final _getData = BinanceViewModel().getBinanceData();
 
   @override
   void initState() {
@@ -48,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
           child: FutureBuilder<List<BinanceModel>>(
-        future: getBinanceData(),
+        future: _getData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<BinanceModel>? binanceData = snapshot.data;
